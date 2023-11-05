@@ -15,10 +15,10 @@ import json
 
 st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
 
-# dashboard title
+st.image("./header.png")
 
-st.title("ENTSO-E Data Manipulation Dashboard, Draft Personal Project")
-st.markdown("### 🚀 Data Master Mind")
+st.title("Empowering Insights: Navigating ENTSO-E Power System Data")
+# st.markdown("### 🚀 Data Master Mind")
 st.markdown("Created by Saeed Misaghian")
 
 
@@ -152,10 +152,12 @@ if uploaded_file is not None:
     )
 
     # Convert the selected time column to datetime
-    df_read[time_column] = pd.to_datetime(df_read[time_column])
+    # df_read[time_column] = pd.to_datetime(df_read[time_column])
 
     # Resample the data according to the selected time resolution
-    df_read = df_read.resample(f"{time_resolution_minutes}T", on=time_column).mean()
+    df_read = df_read.resample(
+        f"{time_resolution_minutes}T", on=time_column
+    ).interpolate()
 
     st.dataframe(df_read)
 
