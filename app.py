@@ -31,8 +31,10 @@ uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
 
 # Check if a file has been uploaded
 if uploaded_file is not None:
+    # Define a list of strings that should be considered as NaN
+    na_values = ["nan", "n/e", "no", "na"]
     # Read the uploaded CSV file
-    df_read = pd.read_csv(uploaded_file)
+    df_read = pd.read_csv(uploaded_file, na_values=na_values)
     st.dataframe(df_read)
     fig_col_missing_values, _ = st.columns(2)
     with fig_col_missing_values:
@@ -69,17 +71,23 @@ options_to_drop = ["Remove", "Interpolate", "Backward/Forward Filling"]
 job_filter2 = st.selectbox("Select the Job", options_to_drop)
 
 if uploaded_file is not None:
-    if job_filter2 == "Remove":
-        # Remove rows with missing values
-        df_read = df_read.dropna()
-    elif job_filter2 == "Interpolate":
-        # Interpolate missing values
-        df_read = df_read.interpolate()
-    elif job_filter2 == "Backward/Forward Filling":
-        # Forward fill for missing values
-        df_read = df_read.ffill()
-        # Backward fill for any remaining missing values
-        df_read = df_read.bfill()
+    # Convert the data types of the columns to numeric
+    for column in df_read.columns[1:]:
+        df_read[column] = pd.to_numeric(df_read[column], errors="coerce")
+
+    # Handle missing values for each column except the first one
+    for column in df_read.columns[1:]:
+        if job_filter2 == "Remove":
+            # Remove rows with missing values
+            df_read = df_read.dropna()
+        elif job_filter2 == "Interpolate":
+            # Interpolate missing values
+            df_read = df_read.interpolate()
+        elif job_filter2 == "Backward/Forward Filling":
+            # Forward fill for missing values
+            df_read = df_read.ffill()
+            # Backward fill for any remaining missing values
+            df_read = df_read.bfill()
 
     st.dataframe(df_read)
 
