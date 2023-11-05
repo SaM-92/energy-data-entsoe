@@ -17,8 +17,10 @@ st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide
 
 # dashboard title
 
-st.title("ENTSO-E Data Manipulation Dashboard")
+st.title("ENTSO-E Data Manipulation Dashboard, Draft Personal Project")
 st.markdown("### 🚀 Data Master Mind")
+st.markdown("Created by Saeed Misaghian")
+
 
 st.image("./logo.png", width=300)  # adjust width as needed
 
@@ -95,7 +97,6 @@ st.markdown("### ⏲️ Time Resolution Adjustment")
 
 if uploaded_file is not None:
     # Ask the client for their preferred time resolution
-    # Ask the client for their preferred time resolution
     time_resolution_number = st.number_input(
         "Please enter your preferred time resolution number:", min_value=1
     )
@@ -103,6 +104,12 @@ if uploaded_file is not None:
         "Please select the unit of your preferred time resolution:",
         ["Minutes", "Hours"],
     )
+
+    # Show the clients the list of their DataFrame columns and ask them to choose the column with date and time observations
+    time_column = st.selectbox(
+        "Please select the column with date and time observations:", df_read.columns
+    )
+
     # # Calculate metrics
     # rmse = sqrt(mean_squared_error(df_read["simulated"], df_read["metered"]))
     # cvrmse = rmse / np.mean(df_read["simulated"]) * 100
