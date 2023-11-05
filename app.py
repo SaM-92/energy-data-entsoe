@@ -91,54 +91,63 @@ if uploaded_file is not None:
 
     st.dataframe(df_read)
 
-st.markdown("### ✔️ Calibration KPIs")
+st.markdown("### ⏲️ Time Resolution Adjustment")
 
 if uploaded_file is not None:
-    # Calculate metrics
-    rmse = sqrt(mean_squared_error(df_read["simulated"], df_read["metered"]))
-    cvrmse = rmse / np.mean(df_read["simulated"]) * 100
-    nmbe = (
-        np.mean(df_read["simulated"] - df_read["metered"])
-        / np.mean(df_read["simulated"])
-        * 100
+    # Ask the client for their preferred time resolution
+    # Ask the client for their preferred time resolution
+    time_resolution_number = st.number_input(
+        "Please enter your preferred time resolution number:", min_value=1
     )
-    mae = mean_absolute_error(df_read["simulated"], df_read["metered"])
-    rn_rmse = rmse / (np.max(df_read["simulated"]) - np.min(df_read["simulated"]))
-
-    fig_measure_simulated = px.line(
-        df_read,
-        x="date_time",
-        y=["simulated", "metered"],
-        color_discrete_sequence=["blue", "red"],
-        title="Simulated vs Metered",
+    time_resolution_unit = st.selectbox(
+        "Please select the unit of your preferred time resolution:",
+        ["Minutes", "Hours"],
     )
-    fig_measure_simulated.update_layout(xaxis_title="Date Time", yaxis_title="kWh")
-    st.plotly_chart(fig_measure_simulated)
+    # # Calculate metrics
+    # rmse = sqrt(mean_squared_error(df_read["simulated"], df_read["metered"]))
+    # cvrmse = rmse / np.mean(df_read["simulated"]) * 100
+    # nmbe = (
+    #     np.mean(df_read["simulated"] - df_read["metered"])
+    #     / np.mean(df_read["simulated"])
+    #     * 100
+    # )
+    # mae = mean_absolute_error(df_read["simulated"], df_read["metered"])
+    # rn_rmse = rmse / (np.max(df_read["simulated"]) - np.min(df_read["simulated"]))
 
-    # Create a DataFrame for the metrics
-    metrics_df = pd.DataFrame(
-        {
-            "Metrics": ["RMSE", "CVRMSE", "NMBE", "MAE", "RN_RMSE"],
-            "Values": [rmse, cvrmse, nmbe, mae, rn_rmse],
-        }
-    )
+    # fig_measure_simulated = px.line(
+    #     df_read,
+    #     x="date_time",
+    #     y=["simulated", "metered"],
+    #     color_discrete_sequence=["blue", "red"],
+    #     title="Simulated vs Metered",
+    # )
+    # fig_measure_simulated.update_layout(xaxis_title="Date Time", yaxis_title="kWh")
+    # st.plotly_chart(fig_measure_simulated)
 
-    # Plot a bar chart of metrics
-    fig_metrics = px.bar(metrics_df, x="Metrics", y="Values", title="Metrics Bar Chart")
-    fig_metrics.update_layout(xaxis_title="Metrics", yaxis_title="Value")
-    st.plotly_chart(fig_metrics)
+    # # Create a DataFrame for the metrics
+    # metrics_df = pd.DataFrame(
+    #     {
+    #         "Metrics": ["RMSE", "CVRMSE", "NMBE", "MAE", "RN_RMSE"],
+    #         "Values": [rmse, cvrmse, nmbe, mae, rn_rmse],
+    #     }
+    # )
 
-    kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
+    # # Plot a bar chart of metrics
+    # fig_metrics = px.bar(metrics_df, x="Metrics", y="Values", title="Metrics Bar Chart")
+    # fig_metrics.update_layout(xaxis_title="Metrics", yaxis_title="Value")
+    # st.plotly_chart(fig_metrics)
 
-    # fill in those three columns with respective metrics or KPIs
-    kpi1.metric(label="RMSE ⏳", value=round(rmse, 2), delta=round(rmse, 2))
-    kpi2.metric(label="CVRMSE 📈 ", value=round(cvrmse, 2), delta=round(rmse, 2))
-    kpi3.metric(label="NMBE ⏳", value=round(nmbe, 2), delta=round(nmbe, 2))
-    kpi4.metric(label="MAE 📈", value=round(mae, 2), delta=round(mae, 2))
-    kpi5.metric(label="RN_RMSE ⏳", value=round(rn_rmse, 2), delta=round(rn_rmse, 2))
+    # kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
 
-    # Display the DataFrame as a table in Streamlit
-    st.table(metrics_df)
+    # # fill in those three columns with respective metrics or KPIs
+    # kpi1.metric(label="RMSE ⏳", value=round(rmse, 2), delta=round(rmse, 2))
+    # kpi2.metric(label="CVRMSE 📈 ", value=round(cvrmse, 2), delta=round(rmse, 2))
+    # kpi3.metric(label="NMBE ⏳", value=round(nmbe, 2), delta=round(nmbe, 2))
+    # kpi4.metric(label="MAE 📈", value=round(mae, 2), delta=round(mae, 2))
+    # kpi5.metric(label="RN_RMSE ⏳", value=round(rn_rmse, 2), delta=round(rn_rmse, 2))
+
+    # # Display the DataFrame as a table in Streamlit
+    # st.table(metrics_df)
 
 
 st.markdown("### 💾 Download the Results")
