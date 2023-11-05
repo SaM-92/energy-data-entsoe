@@ -20,9 +20,10 @@ st.image("./header.png")
 st.title("Empowering Insights: Navigating ENTSO-E Power System Data")
 # st.markdown("### 🚀 Data Master Mind")
 st.markdown("Created by Saeed Misaghian")
+# st.markdown("Created by Saeed Misaghian")
 
 
-st.image("./logo.png", width=300)  # adjust width as needed
+# st.image("./logo.png", width=300)  # adjust width as needed
 
 
 st.markdown("### 🔗 Upload your data")
@@ -38,6 +39,25 @@ if uploaded_file is not None:
     # Read the uploaded CSV file
     df_read = pd.read_csv(uploaded_file, na_values=na_values)
     st.dataframe(df_read)
+
+    # Show the clients the list of their DataFrame columns and ask them to choose the column with date and time observations
+    time_column = st.selectbox(
+        "Please select the column with date and time observations:", df_read.columns
+    )
+
+    # Set the 'time_column' as the index explicitly
+    df_read.set_index(time_column, inplace=True)
+    # Find the first row with '-'
+    # ENTSO-e puts "-" when data is missing for the future
+    first_invalid_row = df_read.eq("-").any(axis=1).idxmax()
+
+    first_invalid_row_time = first_invalid_row.split(" - ")[0]
+
+    first_invalid_row_time = pd.to_datetime(
+        first_invalid_row_time, format="%d.%m.%Y %H:%M"
+    )
+    # reset the index
+    df_read.reset_index(inplace=True)
     fig_col_missing_values, _ = st.columns(2)
     with fig_col_missing_values:
         missing_values = df_read.isnull().sum()
@@ -105,11 +125,6 @@ if uploaded_file is not None:
         ["minutes", "hours"],
     )
 
-    # Show the clients the list of their DataFrame columns and ask them to choose the column with date and time observations
-    time_column = st.selectbox(
-        "Please select the column with date and time observations:", df_read.columns
-    )
-
     def convert_time(df, time_column):
         """
         Converts a time column in a DataFrame to a consistent datetime format.
@@ -151,18 +166,38 @@ if uploaded_file is not None:
         60 if time_resolution_unit == "hours" else 1
     )
 
-    # Convert the selected time column to datetime
-    # df_read[time_column] = pd.to_datetime(df_read[time_column])
+    # Set the 'time_column' as the index explicitly
+    df_read.set_index(time_column, inplace=True)
 
-    # Resample the data according to the selected time resolution
-    df_read = df_read.resample(
-        f"{time_resolution_minutes}T", on=time_column
-    ).interpolate()
+    # find the dataset frequency
+    difference = df_read.index.to_series().diff()[1]
+    minutes_difference = difference.total_seconds() / 60
+
+    # Keep only the rows until the row before the first_invalid_row
+    df_read = df_read.loc[
+        : first_invalid_row_time - pd.Timedelta(minutes=minutes_difference)
+    ]
+
+    # Check for duplicate index values
+    duplicates = df_read.index.duplicated()
+
+    # Handle duplicates (for example, by keeping the first occurrence and dropping the others)
+    df_read = df_read[~duplicates]
+    # be sure that columns are not object (we have already taken care of nan etc.. so we should have only numbers)
+    df_read = df_read.apply(pd.to_numeric, errors="coerce")
+
+    df_read = df_read.resample(f"{time_resolution_minutes}T").interpolate()
 
     st.dataframe(df_read)
 
 
 st.markdown("### 🎨 Visualising the Results")
+
+import datetime
+
+date_of_interest = st.date_input(
+    "Select the day you want to see the data for", datetime.date(2019, 7, 6)
+)
 
 
 st.markdown("### 💾 Download the Results")
