@@ -102,7 +102,7 @@ if uploaded_file is not None:
     )
     time_resolution_unit = st.selectbox(
         "Please select the unit of your preferred time resolution:",
-        ["Minutes", "Hours"],
+        ["minutes", "hours"],
     )
 
     # Show the clients the list of their DataFrame columns and ask them to choose the column with date and time observations
@@ -110,51 +110,57 @@ if uploaded_file is not None:
         "Please select the column with date and time observations:", df_read.columns
     )
 
-    # # Calculate metrics
-    # rmse = sqrt(mean_squared_error(df_read["simulated"], df_read["metered"]))
-    # cvrmse = rmse / np.mean(df_read["simulated"]) * 100
-    # nmbe = (
-    #     np.mean(df_read["simulated"] - df_read["metered"])
-    #     / np.mean(df_read["simulated"])
-    #     * 100
-    # )
-    # mae = mean_absolute_error(df_read["simulated"], df_read["metered"])
-    # rn_rmse = rmse / (np.max(df_read["simulated"]) - np.min(df_read["simulated"]))
+    def convert_time(df, time_column):
+        """
+        Converts a time column in a DataFrame to a consistent datetime format.
 
-    # fig_measure_simulated = px.line(
-    #     df_read,
-    #     x="date_time",
-    #     y=["simulated", "metered"],
-    #     color_discrete_sequence=["blue", "red"],
-    #     title="Simulated vs Metered",
-    # )
-    # fig_measure_simulated.update_layout(xaxis_title="Date Time", yaxis_title="kWh")
-    # st.plotly_chart(fig_measure_simulated)
+        Args:
+            df (pd.DataFrame): The DataFrame containing the time data.
+            time_column (str): The name of the time column to be converted.
 
-    # # Create a DataFrame for the metrics
-    # metrics_df = pd.DataFrame(
-    #     {
-    #         "Metrics": ["RMSE", "CVRMSE", "NMBE", "MAE", "RN_RMSE"],
-    #         "Values": [rmse, cvrmse, nmbe, mae, rn_rmse],
-    #     }
-    # )
+        Returns:
+            pd.DataFrame: The DataFrame with the time column converted to datetime.
+        """
 
-    # # Plot a bar chart of metrics
-    # fig_metrics = px.bar(metrics_df, x="Metrics", y="Values", title="Metrics Bar Chart")
-    # fig_metrics.update_layout(xaxis_title="Metrics", yaxis_title="Value")
-    # st.plotly_chart(fig_metrics)
+        if " - " in df[time_column].iloc[0]:
+            # Split the time interval into start and end times
+            df["Start Time"] = df[time_column].str.split(" - ", expand=True)[0]
 
-    # kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
+            # Drop the original time column
+            df.drop(time_column, inplace=True, axis=1)
 
-    # # fill in those three columns with respective metrics or KPIs
-    # kpi1.metric(label="RMSE ⏳", value=round(rmse, 2), delta=round(rmse, 2))
-    # kpi2.metric(label="CVRMSE 📈 ", value=round(cvrmse, 2), delta=round(rmse, 2))
-    # kpi3.metric(label="NMBE ⏳", value=round(nmbe, 2), delta=round(nmbe, 2))
-    # kpi4.metric(label="MAE 📈", value=round(mae, 2), delta=round(mae, 2))
-    # kpi5.metric(label="RN_RMSE ⏳", value=round(rn_rmse, 2), delta=round(rn_rmse, 2))
+            # Convert the "Start Time" to datetime
+            df["Start Time"] = pd.to_datetime(df["Start Time"], format="%d.%m.%Y %H:%M")
 
-    # # Display the DataFrame as a table in Streamlit
-    # st.table(metrics_df)
+            # Assign the datetime values to the original time column name
+            df[time_column] = df["Start Time"]
+
+            # Drop the "Start Time" column
+            df.drop("Start Time", inplace=True, axis=1)
+        else:
+            # Convert the time data to datetime
+            df[time_column] = pd.to_datetime(df[time_column], format="%d.%m.%Y %H:%M")
+
+        return df
+
+    # Apply the function to your DataFrame
+    df_read = convert_time(df_read, time_column)
+
+    # Convert the selected time resolution to minutes
+    time_resolution_minutes = time_resolution_number * (
+        60 if time_resolution_unit == "hours" else 1
+    )
+
+    # Convert the selected time column to datetime
+    df_read[time_column] = pd.to_datetime(df_read[time_column])
+
+    # Resample the data according to the selected time resolution
+    df_read = df_read.resample(f"{time_resolution_minutes}T", on=time_column).mean()
+
+    st.dataframe(df_read)
+
+
+st.markdown("### 🎨 Visualising the Results")
 
 
 st.markdown("### 💾 Download the Results")
