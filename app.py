@@ -1,29 +1,16 @@
 import streamlit as st  # web development
 import numpy as np  # np mean, np random
 import pandas as pd  # read csv, df manipulation
-import time  # to simulate a real time data, time loop
 import plotly.express as px  # interactive charts
-import missingno as msno
-import matplotlib.pyplot as plt
-from sklearn.metrics import mean_squared_error, mean_absolute_error
-from math import sqrt
-import json
-
-# read csv from a github repo
-# df = pd.read_csv("https://raw.githubusercontent.com/Lexie88rus/bank-marketing-analysis/master/bank.csv")
-
+import plotly.graph_objects as go
 
 st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
 
 st.image("./header.png")
 
 st.title("Empowering Insights: Navigating ENTSO-E Power System Data")
-# st.markdown("### 🚀 Data Master Mind")
 st.markdown("Created by Saeed Misaghian")
-# st.markdown("Created by Saeed Misaghian")
-
-
-# st.image("./logo.png", width=300)  # adjust width as needed
+st.markdown("📧 sam.misaqian@gmail.com")
 
 
 st.markdown("### 🔗 Upload your data")
@@ -49,13 +36,19 @@ if uploaded_file is not None:
     df_read.set_index(time_column, inplace=True)
     # Find the first row with '-'
     # ENTSO-e puts "-" when data is missing for the future
-    first_invalid_row = df_read.eq("-").any(axis=1).idxmax()
 
-    first_invalid_row_time = first_invalid_row.split(" - ")[0]
+    if (df_read == "-").any().any():
+        first_invalid_row = df_read.eq("-").any(axis=1).idxmax()
+        skip_invalid_row = "False"
+    else:
+        skip_invalid_row = "True"
 
-    first_invalid_row_time = pd.to_datetime(
-        first_invalid_row_time, format="%d.%m.%Y %H:%M"
-    )
+    if skip_invalid_row == True:
+        first_invalid_row_time = first_invalid_row.split(" - ")[0]
+
+        first_invalid_row_time = pd.to_datetime(
+            first_invalid_row_time, format="%d.%m.%Y %H:%M"
+        )
     # reset the index
     df_read.reset_index(inplace=True)
     fig_col_missing_values, _ = st.columns(2)
@@ -174,9 +167,10 @@ if uploaded_file is not None:
     minutes_difference = difference.total_seconds() / 60
 
     # Keep only the rows until the row before the first_invalid_row
-    df_read = df_read.loc[
-        : first_invalid_row_time - pd.Timedelta(minutes=minutes_difference)
-    ]
+    if skip_invalid_row == False:
+        df_read = df_read.loc[
+            : first_invalid_row_time - pd.Timedelta(minutes=minutes_difference)
+        ]
 
     # Check for duplicate index values
     duplicates = df_read.index.duplicated()
@@ -195,20 +189,19 @@ st.markdown("### 🎨 Visualising the Results")
 
 import datetime
 
-date_of_interest = st.date_input(
-    "Select the day you want to see the data for", datetime.date(2023, 7, 6)
-)
+# Select a range of dates
+start_date = datetime.date(2023, 7, 6)
+end_date = datetime.date(2023, 7, 8)
+date_of_interest = st.date_input("Select a date range", [start_date, end_date])
 
 if uploaded_file is not None:
-    df_day_of_interest = df_read.loc[date_of_interest.strftime("%Y-%m-%d")]
+    df_day_of_interest = df_read.loc[
+        date_of_interest[0]
+        .strftime("%Y-%m-%d") : date_of_interest[1]
+        .strftime("%Y-%m-%d")
+    ]
 
     st.dataframe(df_day_of_interest)
-
-    # assuming df_day_of_interest is your DataFrame
-    # for column in df_day_of_interest.columns:
-    #     fig = px.line(df_day_of_interest, x=df_day_of_interest.index, y=column)
-    #     st.plotly_chart(fig)
-    import plotly.graph_objects as go
 
     # Loop over each column in your DataFrame
     fig2 = go.Figure()
@@ -221,29 +214,3 @@ if uploaded_file is not None:
 
     # Display the figure in Streamlit
     st.plotly_chart(fig2, use_container_width=True)
-
-
-st.markdown("### 💾 Download the Results")
-
-if uploaded_file is not None:
-    # Create a dictionary for the metrics
-    metrics_dict = {
-        "Total dataset metrics": {
-            "Root Mean Squared Error (RMSE)": f"{rmse}",
-            "Coefficient of the Variation of the Root Mean Square Error (CVRMSE)": f"{cvrmse}",
-            "Normalised mean bias error (NMBE)": f"{nmbe}",
-            "Mean absolute error (MAE)": f"{mae}",
-            "Range Normalised Root Mean Squared Error (RN_RMSE)": f"{rn_rmse}",
-        }
-    }
-
-    # Convert the dictionary to a JSON string
-    metrics_json = json.dumps(metrics_dict)
-
-    # Create a download button for the JSON string
-    st.download_button(
-        label="Download metrics in JSON format",
-        data=metrics_json,
-        file_name="metrics.json",
-        mime="application/json",
-    )
