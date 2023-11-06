@@ -196,8 +196,31 @@ st.markdown("### 🎨 Visualising the Results")
 import datetime
 
 date_of_interest = st.date_input(
-    "Select the day you want to see the data for", datetime.date(2019, 7, 6)
+    "Select the day you want to see the data for", datetime.date(2023, 7, 6)
 )
+
+if uploaded_file is not None:
+    df_day_of_interest = df_read.loc[date_of_interest.strftime("%Y-%m-%d")]
+
+    st.dataframe(df_day_of_interest)
+
+    # assuming df_day_of_interest is your DataFrame
+    # for column in df_day_of_interest.columns:
+    #     fig = px.line(df_day_of_interest, x=df_day_of_interest.index, y=column)
+    #     st.plotly_chart(fig)
+    import plotly.graph_objects as go
+
+    # Loop over each column in your DataFrame
+    fig2 = go.Figure()
+    for column in df_day_of_interest.columns:
+        fig2.add_trace(
+            go.Scatter(
+                x=df_day_of_interest.index, y=df_day_of_interest[column], name=column
+            )
+        )
+
+    # Display the figure in Streamlit
+    st.plotly_chart(fig2, use_container_width=True)
 
 
 st.markdown("### 💾 Download the Results")
