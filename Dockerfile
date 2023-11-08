@@ -9,6 +9,7 @@ WORKDIR /app
 COPY ./requirements.txt .
 
 
+
 # Install any needed packages specified in requirements.txt
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
@@ -18,6 +19,7 @@ COPY . /app/
 # Define environment variable
 ENV streamlitEnv=
 
+#expose port
 EXPOSE 8501
 
 # Run the command when the container launches
