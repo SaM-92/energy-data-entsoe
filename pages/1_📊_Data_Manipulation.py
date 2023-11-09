@@ -3,18 +3,17 @@ import numpy as np  # np mean, np random
 import pandas as pd  # read csv, df manipulation
 import plotly.express as px  # interactive charts
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 import random
 from subs.modules import *
 
 
+st.markdown("# Data Manipulation")
+st.sidebar.header("Plotting Demo")
 
-st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
-
-st.image("./header.png")
-
-st.title("Empowering Insights: Navigating ENTSO-E Power System Data")
-st.markdown("Created by Saeed Misaghian")
-st.markdown("📧 Contact me: sam.misaqian@gmail.com")
+st.write(
+    """This section helps you to """
+)
 
 
 st.markdown("### 🔗 Upload your data")
@@ -152,7 +151,7 @@ if uploaded_file is not None:
             df.drop(time_column, inplace=True, axis=1)
 
             # Convert the "Start Time" to datetime
-            df["Start Time"] = pd.to_datetime(df["Start Time"], format="%d.%m.%Y %H:%M")
+            df["Start Time"] = pd.to_datetime(df["Start Time"], format="mixed")
 
             # Assign the datetime values to the original time column name
             df[time_column] = df["Start Time"]
@@ -161,7 +160,7 @@ if uploaded_file is not None:
             df.drop("Start Time", inplace=True, axis=1)
         else:
             # Convert the time data to datetime
-            df[time_column] = pd.to_datetime(df[time_column], format="%d.%m.%Y %H:%M")
+            df[time_column] = pd.to_datetime(df[time_column], format="mixed")
 
         return df
 
@@ -229,46 +228,8 @@ if uploaded_file is not None:
     # Display the figure in Streamlit
     st.plotly_chart(fig2, use_container_width=True)
 
-st.markdown("### 📈 Trend Analysis")
 
-if uploaded_file is not None:
-
-
-
-
-
-    # Resample the data to daily frequency for trend analysis
-    daily_load_forecast = df_read['Day-ahead Total Load Forecast [MW] - Netherlands (NL)'].resample('D').mean()
-    daily_actual_load = df_read['Actual Total Load [MW] - Netherlands (NL)'].resample('D').mean()
-
-    # Assuming df_read has datetime index now after conversion
-    for column in df_read.columns:
-        # Generate a random color
-        random_color = 'rgb(%d, %d, %d)' % (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-
-
-        # Loop over each column in your DataFrame
-    fig3 = go.Figure()
-    for column in df_read.columns:
-        # Resample and calculate mean for each day
-        daily_mean = df_read[column].resample('D').mean()
-        random_color = 'rgb(%d, %d, %d)' % (random.randint(0, 1), random.randint(0, 2), random.randint(0, 3))
-        fig3.add_trace(
-            go.Scatter(
-                x=daily_mean.index, y=daily_mean, name=column , line=dict(color=random_color)  # Use the random color
-            )
-        )
-    # Display the figure in Streamlit
-    st.plotly_chart(fig3, use_container_width=True)
-
-
-    # Calculate the mean absolute percentage error (MAPE) for forecast accuracy
-    mape = ((daily_load_forecast - daily_actual_load).abs() / daily_actual_load).mean()
-
-    # Identify peak load times
-    peak_load_times = df_read.idxmax()
-
-    # Calculate load differences
-    load_difference = (daily_load_forecast - daily_actual_load).abs().describe()
-
-    (daily_load_forecast, daily_actual_load, mape, peak_load_times, load_difference)
+# Streamlit widgets automatically run the script from top to bottom. Since
+# this button is not connected to any other logic, it just causes a plain
+# rerun.
+st.button("Re-run")
