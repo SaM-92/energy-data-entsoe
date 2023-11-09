@@ -3,6 +3,7 @@ import numpy as np  # np mean, np random
 import pandas as pd  # read csv, df manipulation
 import plotly.express as px  # interactive charts
 import plotly.graph_objects as go
+import random
 from subs.modules import *
 
 
@@ -37,6 +38,7 @@ if uploaded_file is not None:
     else:
         st.error("Unsupported file format. Please upload a CSV or Excel file.")
 
+    #display dataframe 
     st.dataframe(df_read)
 
     # Show the clients the list of their DataFrame columns and ask them to choose the column with date and time observations
@@ -226,3 +228,47 @@ if uploaded_file is not None:
 
     # Display the figure in Streamlit
     st.plotly_chart(fig2, use_container_width=True)
+
+st.markdown("### 📈 Trend Analysis")
+
+if uploaded_file is not None:
+
+
+
+
+
+    # Resample the data to daily frequency for trend analysis
+    daily_load_forecast = df_read['Day-ahead Total Load Forecast [MW] - Netherlands (NL)'].resample('D').mean()
+    daily_actual_load = df_read['Actual Total Load [MW] - Netherlands (NL)'].resample('D').mean()
+
+    # Assuming df_read has datetime index now after conversion
+    for column in df_read.columns:
+        # Generate a random color
+        random_color = 'rgb(%d, %d, %d)' % (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+
+
+        # Loop over each column in your DataFrame
+    fig3 = go.Figure()
+    for column in df_read.columns:
+        # Resample and calculate mean for each day
+        daily_mean = df_read[column].resample('D').mean()
+        random_color = 'rgb(%d, %d, %d)' % (random.randint(0, 1), random.randint(0, 2), random.randint(0, 3))
+        fig3.add_trace(
+            go.Scatter(
+                x=daily_mean.index, y=daily_mean, name=column , line=dict(color=random_color)  # Use the random color
+            )
+        )
+    # Display the figure in Streamlit
+    st.plotly_chart(fig3, use_container_width=True)
+
+
+    # Calculate the mean absolute percentage error (MAPE) for forecast accuracy
+    mape = ((daily_load_forecast - daily_actual_load).abs() / daily_actual_load).mean()
+
+    # Identify peak load times
+    peak_load_times = df_read.idxmax()
+
+    # Calculate load differences
+    load_difference = (daily_load_forecast - daily_actual_load).abs().describe()
+
+    (daily_load_forecast, daily_actual_load, mape, peak_load_times, load_difference)
