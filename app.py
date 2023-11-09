@@ -3,6 +3,9 @@ import numpy as np  # np mean, np random
 import pandas as pd  # read csv, df manipulation
 import plotly.express as px  # interactive charts
 import plotly.graph_objects as go
+from subs.modules import *
+
+
 
 st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
 
@@ -10,21 +13,30 @@ st.image("./header.png")
 
 st.title("Empowering Insights: Navigating ENTSO-E Power System Data")
 st.markdown("Created by Saeed Misaghian")
-st.markdown("📧 sam.misaqian@gmail.com")
+st.markdown("📧 Contact me: sam.misaqian@gmail.com")
 
 
 st.markdown("### 🔗 Upload your data")
 
 # Create a file uploader
-uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
+uploaded_file = st.file_uploader("Upload your CSV file")
 
 
 # Check if a file has been uploaded
 if uploaded_file is not None:
     # Define a list of strings that should be considered as NaN
     na_values = ["nan", "n/e", "no", "na"]
-    # Read the uploaded CSV file
-    df_read = pd.read_csv(uploaded_file, na_values=na_values)
+    # Check the file extension to determine file format
+    file_name = uploaded_file.name
+    if file_name.endswith('.csv'):
+        # Read the uploaded CSV file
+        df_read = pd.read_csv(uploaded_file, na_values=na_values)
+    elif file_name.endswith(('.xls', '.xlsx')):
+        # Read the uploaded Excel file
+        df_read = pd.read_excel(uploaded_file, na_values=na_values)
+    else:
+        st.error("Unsupported file format. Please upload a CSV or Excel file.")
+
     st.dataframe(df_read)
 
     # Show the clients the list of their DataFrame columns and ask them to choose the column with date and time observations
