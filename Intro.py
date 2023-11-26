@@ -11,8 +11,8 @@ from subs.data_loader import load_data, clean_data
 # st.set_page_config(page_title="Data Master Mind", page_icon="👋🏽", layout="wide")
 
 st.set_page_config(
-    page_title="Hello",
-    page_icon="👋",
+    page_title="Empowering Insights",
+    page_icon="🏭",
 )
 st.image("./header.png")
 
@@ -29,8 +29,10 @@ def page0():
 
     ### About ENTSO-E
     The European Network of Transmission System Operators for Electricity (ENTSO-E) coordinates the cross-border system operations, market developments, and data exchange among Europe's transmission system operators (TSOs). ENTSO-E focuses on ensuring the seamless operation and development of the European electricity market and the electric grid.
-
-    ### This Service
+   
+    📊 [ENTSO-E Transparency Platform](https://transparency.entsoe.eu/)
+                
+    ### Current Service
     This interactive tool is designed to streamline your analysis of ENTSO-E power system data. Here's what you can do:
 
     #### 1. Data Manipulation
@@ -48,15 +50,16 @@ def page0():
 
     This is a demo project, intended to showcase the potential of ENTSO-E data analysis.
 
-    ### Getting Started with ENTSO-E Data
-    If you're new to ENTSO-E data, I've created a tutorial to help you get started:
+    """            
+    # ### Getting Started with ENTSO-E Data
+    # If you're new to ENTSO-E data, I've created a tutorial to help you get started:
 
-    🎥 [Learn how to get ENTSO-E data](https://www.youtube.com/yourvideolink)
+    # 🎥 [Learn how to get ENTSO-E data](https://www.youtube.com/yourvideolink)
 
-    ### How to Use This Tool
-    Below you can find a demo that guides you through the functionalities of this tool. Begin by uploading your data, then navigate through the features using the sidebar. Enjoy exploring your data and uncovering valuable insights!
+    # ### How to Use This Tool
+    # Below you can find a demo that guides you through the functionalities of this tool. Begin by uploading your data, then navigate through the features using the sidebar. Enjoy exploring your data and uncovering valuable insights!
 
-    """)
+    )
     
 # Define your pages
 def page1():
