@@ -5,7 +5,7 @@ import plotly.express as px  # interactive charts
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import random
-from subs.data_loader import load_data, clean_data 
+from subs.data_loader import load_data, process_data_for_analysis 
 
 # st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
 # st.set_page_config(page_title="Data Master Mind", page_icon="👋🏽", layout="wide")
@@ -81,30 +81,17 @@ def page1():
         df_read = load_data(uploaded_file)
         st.dataframe(df_read)
 
-        # Show the clients the list of their DataFrame columns and ask them to choose the column with date and time observations
+        # Show the clients the list of their DataFrame columns and ask them to 
+        # choose the column with date and time observations
         time_column = st.selectbox(
             "Please select the column with date and time observations:", df_read.columns
         )
 
-        # Set the 'time_column' as the index explicitly
-        df_read.set_index(time_column, inplace=True)
-        # Find the first row with '-'
-        # ENTSO-e puts "-" when data is missing for the future
 
-        if (df_read == "-").any().any():
-            first_invalid_row = df_read.eq("-").any(axis=1).idxmax()
-            skip_invalid_row = "False"
-        else:
-            skip_invalid_row = "True"
+        df_read = process_data_for_analysis(df_read,time_column)
 
-        if skip_invalid_row == True:
-            first_invalid_row_time = first_invalid_row.split(" - ")[0]
+        # Visualise data
 
-            first_invalid_row_time = pd.to_datetime(
-                first_invalid_row_time, format="%d.%m.%Y %H:%M"
-            )
-        # reset the index
-        df_read.reset_index(inplace=True)
         fig_col_missing_values, _ = st.columns(2)
         with fig_col_missing_values:
             missing_values = df_read.isnull().sum()
