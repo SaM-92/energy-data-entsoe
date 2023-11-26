@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import random
 from subs.data_loader import load_data, process_data_for_analysis 
+from subs.visualisation import visualize_missing_values
 
 # st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
 # st.set_page_config(page_title="Data Master Mind", page_icon="👋🏽", layout="wide")
@@ -87,39 +88,12 @@ def page1():
             "Please select the column with date and time observations:", df_read.columns
         )
 
-
+        # process data for further analysis 
         df_read = process_data_for_analysis(df_read,time_column)
 
-        # Visualise data
+        # Visualise missing data
+        visualize_missing_values(df_read)
 
-        fig_col_missing_values, _ = st.columns(2)
-        with fig_col_missing_values:
-            missing_values = df_read.isnull().sum()
-
-            # Create a DataFrame for the missing values
-            missing_df = pd.DataFrame(
-                {
-                    "Column names": missing_values.index,
-                    "Missing Values": missing_values.values,
-                }
-            )
-
-            # Create a bar chart with Plotly Express
-            fig = px.bar(
-                missing_df,
-                x="Column names",
-                y="Missing Values",
-                title="💡 Number of Missing Values per Column",
-            )
-
-            # Set the layout to have a transparent background
-            fig.update_layout(
-                {
-                    "plot_bgcolor": "rgba(0, 0, 0, 0)",
-                    "paper_bgcolor": "rgba(0, 0, 0, 0)",
-                }
-            )
-            st.write(fig)
 
     st.markdown("### ⚙️ Dealing with Missing Values")
     st.markdown("📝 Please choose how you want to deal with missing values?")
