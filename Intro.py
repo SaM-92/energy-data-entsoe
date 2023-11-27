@@ -123,7 +123,7 @@ def page1():
         df_read = process_time_resolution_and_duplicates(df_read, time_column, time_resolution_number, time_resolution_unit, skip_invalid_row, first_invalid_row_time)
 
         st.dataframe(df_read)
-        st.session_state['df_read'] = df_read  # Save processed DataFrame to session state
+        st.session_state['df_read'] = df_read  # Save processed DataFrame to session state for other pages
 
 
     st.markdown("### 🎨 Visualising the Results")
