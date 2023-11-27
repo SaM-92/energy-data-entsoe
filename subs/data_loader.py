@@ -59,3 +59,45 @@ def process_data_for_analysis(df_read, time_column):
     # reset the index
     df_read.reset_index(inplace=True)
     return df_read
+
+
+def process_uploaded_file(df, job_filter):
+    """
+    Processes an uploaded file by converting data types to numeric and handling missing values.
+
+    This function takes a DataFrame and a job filter option. It first converts the data types of all
+    columns, except the first one, to numeric, handling any errors with coercion. It then processes
+    missing values in the DataFrame based on the specified job filter option, which can be to remove,
+    interpolate, or forward/backward fill the missing values.
+
+    Args:
+        df: pandas DataFrame
+            The DataFrame extracted from the uploaded file.
+        job_filter: str
+            The method chosen for handling missing values. Options include 'Remove',
+            'Interpolate', and 'Backward/Forward Filling'.
+
+    Displays:
+        The processed DataFrame is displayed in the Streamlit app.
+    """
+
+
+    # Convert data types of columns to numeric, starting from the second column
+    for column in df.columns[1:]:
+        df[column] = pd.to_numeric(df[column], errors="coerce")
+
+    # Handle missing values based on the job_filter option
+    for column in df.columns[1:]:
+        if job_filter == "Remove":
+            # Remove rows with missing values
+            df = df.dropna()
+        elif job_filter == "Interpolate":
+            # Interpolate missing values
+            df = df.interpolate()
+        elif job_filter == "Backward/Forward Filling":
+            # Forward fill followed by backward fill for missing values
+            df = df.ffill().bfill()
+    return df        
+
+
+        

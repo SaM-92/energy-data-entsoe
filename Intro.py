@@ -5,7 +5,7 @@ import plotly.express as px  # interactive charts
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import random
-from subs.data_loader import load_data, process_data_for_analysis 
+from subs.data_loader import load_data, process_data_for_analysis , process_uploaded_file
 from subs.visualisation import visualize_missing_values
 
 # st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
@@ -98,27 +98,11 @@ def page1():
     st.markdown("### ⚙️ Dealing with Missing Values")
     st.markdown("📝 Please choose how you want to deal with missing values?")
     options_to_drop = ["Remove", "Interpolate", "Backward/Forward Filling"]
-    job_filter2 = st.selectbox("Select the Job", options_to_drop)
+    # users can define the method by which they prefer to deal with missing values
+    selected_option_missing_values = st.selectbox("Select the Job", options_to_drop)
 
     if uploaded_file is not None:
-        # Convert the data types of the columns to numeric
-        for column in df_read.columns[1:]:
-            df_read[column] = pd.to_numeric(df_read[column], errors="coerce")
-
-        # Handle missing values for each column except the first one
-        for column in df_read.columns[1:]:
-            if job_filter2 == "Remove":
-                # Remove rows with missing values
-                df_read = df_read.dropna()
-            elif job_filter2 == "Interpolate":
-                # Interpolate missing values
-                df_read = df_read.interpolate()
-            elif job_filter2 == "Backward/Forward Filling":
-                # Forward fill for missing values
-                df_read = df_read.ffill()
-                # Backward fill for any remaining missing values
-                df_read = df_read.bfill()
-
+        df_read = process_uploaded_file (df_read,selected_option_missing_values)
         st.dataframe(df_read)
 
     st.markdown("### ⏲️ Time Resolution Adjustment")
