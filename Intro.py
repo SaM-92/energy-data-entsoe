@@ -5,7 +5,7 @@ import plotly.express as px  # interactive charts
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import random
-from subs.data_loader import load_data, process_data_for_analysis , process_uploaded_file, convert_time
+from subs.data_loader import load_data, process_data_for_analysis , process_uploaded_file, convert_time , process_time_resolution_and_duplicates
 from subs.visualisation import visualize_missing_values
 
 # st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
@@ -89,7 +89,7 @@ def page1():
         )
 
         # process data for further analysis 
-        df_read , skip_invalid_row= process_data_for_analysis(df_read,time_column)
+        df_read , skip_invalid_row , first_invalid_row_time= process_data_for_analysis(df_read,time_column)
 
         # Visualise missing data
         visualize_missing_values(df_read)
@@ -117,69 +117,10 @@ def page1():
             ["minutes", "hours"],
         )
 
-        def convert_time(df, time_column):
-            """
-            Converts a time column in a DataFrame to a consistent datetime format.
-
-            Args:
-                df (pd.DataFrame): The DataFrame containing the time data.
-                time_column (str): The name of the time column to be converted.
-
-            Returns:
-                pd.DataFrame: The DataFrame with the time column converted to datetime.
-            """
-
-            if " - " in df[time_column].iloc[0]:
-                # Split the time interval into start and end times
-                df["Start Time"] = df[time_column].str.split(" - ", expand=True)[0]
-
-                # Drop the original time column
-                df.drop(time_column, inplace=True, axis=1)
-
-                # Convert the "Start Time" to datetime
-                df["Start Time"] = pd.to_datetime(df["Start Time"], format="mixed")
-
-                # Assign the datetime values to the original time column name
-                df[time_column] = df["Start Time"]
-
-                # Drop the "Start Time" column
-                df.drop("Start Time", inplace=True, axis=1)
-            else:
-                # Convert the time data to datetime
-                df[time_column] = pd.to_datetime(df[time_column], format="mixed")
-
-            return df
-
         # Apply the function to your DataFrame
         df_read = convert_time(df_read, time_column)
 
-        # Convert the selected time resolution to minutes
-        time_resolution_minutes = time_resolution_number * (
-            60 if time_resolution_unit == "hours" else 1
-        )
-
-        # Set the 'time_column' as the index explicitly
-        df_read.set_index(time_column, inplace=True)
-
-        # find the dataset frequency
-        difference = df_read.index.to_series().diff()[1]
-        minutes_difference = difference.total_seconds() / 60
-
-        # Keep only the rows until the row before the first_invalid_row
-        if skip_invalid_row == False:
-            df_read = df_read.loc[
-                : first_invalid_row_time - pd.Timedelta(minutes=minutes_difference)
-            ]
-
-        # Check for duplicate index values
-        duplicates = df_read.index.duplicated()
-
-        # Handle duplicates (for example, by keeping the first occurrence and dropping the others)
-        df_read = df_read[~duplicates]
-        # be sure that columns are not object (we have already taken care of nan etc.. so we should have only numbers)
-        df_read = df_read.apply(pd.to_numeric, errors="coerce")
-
-        df_read = df_read.resample(f"{time_resolution_minutes}T").interpolate()
+        df_read = process_time_resolution_and_duplicates(df_read, time_column, time_resolution_number, time_resolution_unit, skip_invalid_row, first_invalid_row_time)
 
         st.dataframe(df_read)
         st.session_state['df_read'] = df_read  # Save processed DataFrame to session state
