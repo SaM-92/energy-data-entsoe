@@ -5,8 +5,9 @@ import plotly.express as px  # interactive charts
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import random
+import datetime
 from subs.data_loader import load_data, process_data_for_analysis , process_uploaded_file, convert_time , process_time_resolution_and_duplicates
-from subs.visualisation import visualize_missing_values , visualize_data_by_date_range
+from subs.visualisation import visualize_missing_values , visualize_data_by_date_range , visualise_time_series_data
 
 # st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
 # st.set_page_config(page_title="Data Master Mind", page_icon="👋🏽", layout="wide")
@@ -128,7 +129,6 @@ def page1():
 
     st.markdown("### 🎨 Visualising the Results")
 
-    import datetime
 
     # Select a range of dates
     start_date = datetime.date(2023, 7, 6)
@@ -148,84 +148,7 @@ def page2():
     if 'df_read' in st.session_state:
         df_read = st.session_state['df_read']    
 
-
-        # Assuming df_read has datetime index now after conversion
-        for column in df_read.columns:
-            # Generate a random color
-            random_color = 'rgb(%d, %d, %d)' % (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-
-        # Loop over each column in your DataFrame
-        fig3 = go.Figure()
-        fig4 = go.Figure()
-        fig5 = go.Figure()
-        for column in df_read.columns:
-            # Resample and calculate mean for each day
-            daily_mean = df_read[column].resample('D').mean()
-            
-            monthly_peak = df_read[column].resample('M').max()
-            monthly_mean=df_read[column].resample('M').sum()
-            monthly_change = monthly_mean.diff()
-            
-
-            random_color = 'rgb(%d, %d, %d)' % (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            fig3.add_trace(
-                go.Scatter(
-                    x=daily_mean.index, y=daily_mean, name=column , line=dict(color=random_color)  # Use the random color
-                )
-            )
-            # Add a bar trace for each column
-            fig4.add_trace(
-                go.Bar(
-                    x=monthly_peak.index.strftime('%B'),  # Format the month for the x-axis
-                    y=monthly_peak,
-                    name=column,
-                    marker_color=random_color  # Use the random color for each bar
-                )
-            )
-
-                    # Add a trace for the daily change
-            fig5.add_trace(
-                go.Bar(
-                    x=monthly_change.index, 
-                    y=monthly_change, 
-                    name=f'Monthly Change - {column}', 
-                    marker_color=random_color
-                )
-            )
-
-
-
-
-
-        fig3.update_layout(
-            title={
-                'text': "Daily Load Comparison by Column",
-                'y':0.9,
-                'x':0.5,
-                'xanchor': 'center',
-                'yanchor': 'top'
-            }
-        )   
-        # Update layout for the bar chart
-        fig4.update_layout(
-            title='Monthly Peak Values per Column',
-            xaxis_title='Month',
-            yaxis_title='Peak Value',
-            barmode='group'
-        )
-            # Update layout for the bar chart
-        fig5.update_layout(
-            title='Monthly Load Change per Column',
-            xaxis_title='Date',
-            yaxis_title='Change in Aggregate Load',
-            barmode='group'
-        )
-        # st.write(fig4)
-
-        # Display the figure in Streamlit
-        st.plotly_chart(fig3, use_container_width=True)
-        st.plotly_chart(fig4, use_container_width=True)
-        st.plotly_chart(fig5, use_container_width=True)
+        visualise_time_series_data(df_read)
 
         # Loop through each column in the DataFrame
         for column in df_read.columns:

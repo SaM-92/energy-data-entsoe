@@ -5,6 +5,7 @@ import plotly.express as px
 import streamlit as st
 import datetime
 import plotly.graph_objects as go
+import random
 
 
 def visualize_missing_values(df):
@@ -85,3 +86,51 @@ def visualize_data_by_date_range(df_read, date_of_interest):
 
     # Display the figure in Streamlit
     st.plotly_chart(fig2,use_container_width=True)
+
+def visualise_time_series_data(df_read):
+    """
+    Visualizes time series data in the DataFrame by creating line plots for daily mean values,
+    bar charts for monthly peak values, and bar charts for monthly changes.
+
+    This function iterates over each column in the DataFrame and creates three different types
+    of plots using Plotly: a line plot for daily averages, a bar chart for monthly peaks, and
+    a bar chart for monthly changes. Each plot uses randomly generated colors for the traces.
+
+    Args:
+        df_read: pandas DataFrame
+            The DataFrame containing time series data.
+
+    Displays:
+        Three figures - one for daily means, one for monthly peaks, and one for monthly changes.
+    """
+
+    fig3 = go.Figure()
+    fig4 = go.Figure()
+    fig5 = go.Figure()
+
+    for column in df_read.columns:
+        # Generate a random color
+        random_color = 'rgb(%d, %d, %d)' % (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+
+        # Resample and calculate mean for each day
+        daily_mean = df_read[column].resample('D').mean()
+
+        # Resample for monthly peak and mean
+        monthly_peak = df_read[column].resample('M').max()
+        monthly_mean = df_read[column].resample('M').sum()
+        monthly_change = monthly_mean.diff()
+
+        # Add traces for daily mean, monthly peak, and monthly change
+        fig3.add_trace(go.Scatter(x=daily_mean.index, y=daily_mean, name=column, line=dict(color=random_color)))
+        fig4.add_trace(go.Bar(x=monthly_peak.index.strftime('%B'), y=monthly_peak, name=column, marker_color=random_color))
+        fig5.add_trace(go.Bar(x=monthly_change.index, y=monthly_change, name=f'Monthly Change - {column}', marker_color=random_color))
+
+    # Update layout for each figure
+    fig3.update_layout(title={'text': "Daily Load Comparison by Column", 'y':0.9, 'x':0.5, 'xanchor': 'center', 'yanchor': 'top'})
+    fig4.update_layout(title='Monthly Peak Values per Column', xaxis_title='Month', yaxis_title='Peak Value', barmode='group')
+    fig5.update_layout(title='Monthly Load Change per Column', xaxis_title='Date', yaxis_title='Change in Aggregate Load', barmode='group')
+
+    # Display the figures in Streamlit
+    st.plotly_chart(fig3,use_container_width=True)
+    st.plotly_chart(fig4,use_container_width=True)
+    st.plotly_chart(fig5,use_container_width=True)    
