@@ -6,11 +6,10 @@ import streamlit as st
 
 def visualize_missing_values(df):
     """
-    Creates and displays a bar chart visualization of missing values in each column of a DataFrame.
+    Creates and displays a bar chart visualisation of missing values in each column of a DataFrame.
 
     This function takes a DataFrame, calculates the number of missing values in each column, and then
-    uses Plotly Express to create a bar chart. The chart is then displayed in a Streamlit app with a 
-    layout that includes two columns, placing the chart in the left column.
+    uses Plotly Express to create a bar chart. 
 
     Args:
         df: pandas DataFrame
