@@ -58,7 +58,7 @@ def process_data_for_analysis(df_read, time_column):
    
     # reset the index
     df_read.reset_index(inplace=True)
-    return df_read
+    return df_read , skip_invalid_row
 
 
 def process_uploaded_file(df, job_filter):
@@ -98,6 +98,40 @@ def process_uploaded_file(df, job_filter):
             # Forward fill followed by backward fill for missing values
             df = df.ffill().bfill()
     return df        
+
+
+def convert_time(df, time_column):
+    """
+    Converts a time column in a DataFrame to a consistent datetime format.
+
+    Args:
+        df (pd.DataFrame): The DataFrame containing the time data.
+        time_column (str): The name of the time column to be converted.
+
+    Returns:
+        pd.DataFrame: The DataFrame with the time column converted to datetime.
+    """
+
+    if " - " in df[time_column].iloc[0]:
+        # Split the time interval into start and end times
+        df["Start Time"] = df[time_column].str.split(" - ", expand=True)[0]
+
+        # Drop the original time column
+        df.drop(time_column, inplace=True, axis=1)
+
+        # Convert the "Start Time" to datetime
+        df["Start Time"] = pd.to_datetime(df["Start Time"], format="mixed")
+
+        # Assign the datetime values to the original time column name
+        df[time_column] = df["Start Time"]
+
+        # Drop the "Start Time" column
+        df.drop("Start Time", inplace=True, axis=1)
+    else:
+        # Convert the time data to datetime
+        df[time_column] = pd.to_datetime(df[time_column], format="mixed")
+
+    return df
 
 
         

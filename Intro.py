@@ -5,7 +5,7 @@ import plotly.express as px  # interactive charts
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import random
-from subs.data_loader import load_data, process_data_for_analysis , process_uploaded_file
+from subs.data_loader import load_data, process_data_for_analysis , process_uploaded_file, convert_time
 from subs.visualisation import visualize_missing_values
 
 # st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
@@ -89,7 +89,7 @@ def page1():
         )
 
         # process data for further analysis 
-        df_read = process_data_for_analysis(df_read,time_column)
+        df_read , skip_invalid_row= process_data_for_analysis(df_read,time_column)
 
         # Visualise missing data
         visualize_missing_values(df_read)
