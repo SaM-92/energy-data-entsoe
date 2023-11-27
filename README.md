@@ -1,26 +1,27 @@
 # ENTSO-E Data Analysis Tool
 
+![header](header.png)
+
 ## Description
 
-The ENTSO-E Data Analysis Tool is an interactive web application designed to streamline the analysis of the European Network of Transmission System Operators for Electricity (ENTSO-E) power system data. This tool is crafted to facilitate a seamless operation in handling, visualising, and analysing electricity market and grid data across Europe. 
+The ENTSO-E Data Analysis Tool is an interactive web application designed to streamline the analysis of the European Network of Transmission System Operators for Electricity (ENTSO-E) power system data. This tool is crafted to facilitate a seamless operation in handling, visualising, and analysing electricity market and grid data across Europe.
 
 ## Features
 
-* **Data Upload and Cleaning:** Easily upload ENTSO-E data and handle missing values.
-* **Data Visualisation:** Visualise time series data with options to analyse daily means, monthly peaks, and changes.
-* **Trend Analysis:** Perform basic analysis with features like load comparisons and statistical summaries.
-* **Data Preparation:** Prepare your data by setting time columns, handling invalid rows, and managing duplicates.
-* **Interactive UI:** User-friendly interface with functionalities accessible through a sidebar.
-
+- **Data Upload and Cleaning:** Easily upload ENTSO-E data and handle missing values.
+- **Data Visualisation:** Visualise time series data with options to analyse daily means, monthly peaks, and changes.
+- **Trend Analysis:** Perform basic analysis with features like load comparisons and statistical summaries.
+- **Data Preparation:** Prepare your data by setting time columns, handling invalid rows, and managing duplicates.
+- **Interactive UI:** User-friendly interface with functionalities accessible through a sidebar.
 
 ## Getting Started
 
 ### Prerequisites
 
-* Python 3.x
-* Streamlit
-* Pandas
-* Plotly
+- Python 3.x
+- Streamlit
+- Pandas
+- Plotly
 
 ### Installation
 
@@ -31,7 +32,6 @@ git clone [your-repository-link]
 cd [your-repository-directory]
 pip install -r requirements.txt
 ```
-
 
 ### Running the Application
 
@@ -45,10 +45,9 @@ Navigate to the displayed URL in your web browser to interact with the applicati
 
 ## Modules
 
-* `app.py`: The main application script.
-* `data_loader.py`: Module for loading and initial processing of data.
-* `visualisation.py`: Creating and configuring data visualizations.
-
+- `app.py`: The main application script.
+- `data_loader.py`: Module for loading and initial processing of data.
+- `visualisation.py`: Creating and configuring data visualizations.
 
 ## Usage
 
@@ -56,7 +55,6 @@ Navigate to the displayed URL in your web browser to interact with the applicati
 2. **Data Manipulation:** Clean and prepare your data for analysis.
 3. **Visualize Data:** Explore various visualization options for your data.
 4. **Analyze Trends:** Utilize the tools provided for trend analysis and statistical insights.
-
 
 ## Contact
 
