@@ -1,16 +1,7 @@
 import streamlit as st  # web development
-import numpy as np  # np mean, np random
-import pandas as pd  # read csv, df manipulation
-import plotly.express as px  # interactive charts
-import plotly.graph_objects as go
-import matplotlib.pyplot as plt
-import random
 import datetime
 from subs.data_loader import load_data, process_data_for_analysis , process_uploaded_file, convert_time , process_time_resolution_and_duplicates , display_column_statistics
 from subs.visualisation import visualize_missing_values , visualize_data_by_date_range , visualise_time_series_data
-
-# st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
-# st.set_page_config(page_title="Data Master Mind", page_icon="👋🏽", layout="wide")
 
 st.set_page_config(
     page_title="Empowering Insights",
