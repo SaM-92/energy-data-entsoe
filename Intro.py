@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import random
 import datetime
-from subs.data_loader import load_data, process_data_for_analysis , process_uploaded_file, convert_time , process_time_resolution_and_duplicates
+from subs.data_loader import load_data, process_data_for_analysis , process_uploaded_file, convert_time , process_time_resolution_and_duplicates , display_column_statistics
 from subs.visualisation import visualize_missing_values , visualize_data_by_date_range , visualise_time_series_data
 
 # st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
@@ -149,27 +149,7 @@ def page2():
         df_read = st.session_state['df_read']    
 
         visualise_time_series_data(df_read)
-
-        # Loop through each column in the DataFrame
-        for column in df_read.columns:
-            # Get descriptive statistics for the current column
-            stats = df_read[column].describe()
-
-            # Construct the summary text with markdown for better formatting
-            summary_text = f"""
-            ### Statistics for {column}
-            **Count**: {stats['count']} data points.\n
-            **Mean**: The average is {stats['mean']:.2f}.\n
-            **Standard Deviation**: The standard deviation is {stats['std']:.2f}, which indicates variability.\n
-            **Minimum**: The smallest observed value is {stats['min']:.2f}.\n
-            **25th Percentile**: 25% of the values are {stats['25%']:.2f} or less.\n
-            **50th Percentile (Median)**: The median value is {stats['50%']:.2f}.\n
-            **75th Percentile**: 75% of the values are {stats['75%']:.2f} or less.\n
-            **Maximum**: The largest observed value is {stats['max']:.2f}.
-            """
-
-            # Use Streamlit's 'st.markdown()' function to display the summary for the current column
-            st.markdown(summary_text)    
+        display_column_statistics(df_read) 
     else:
         st.error("Please upload data on the Data Manipulation page first.")        
 

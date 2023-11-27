@@ -1,6 +1,7 @@
 # data_loader.py
 import pandas as pd
 import numpy as np
+import streamlit as st
 
 def load_data(uploaded_file):
     """
@@ -191,5 +192,38 @@ def process_time_resolution_and_duplicates(df_read, time_column, time_resolution
 
     return df_read
 
+
+def display_column_statistics(df_read):
+    """
+    Computes and displays descriptive statistics for each column in the DataFrame.
+
+    This function iterates through each column of the DataFrame and calculates descriptive statistics
+    such as count, mean, standard deviation, minimum, percentiles, and maximum. It then formats these
+    statistics into a markdown string for better readability and displays them using Streamlit.
+
+    Args:
+        df_read: pandas DataFrame
+            The DataFrame for which descriptive statistics are to be computed and displayed.
+    """
+
+    for column in df_read.columns:
+        # Compute descriptive statistics for the current column
+        stats = df_read[column].describe()
+
+        # Construct the summary text with markdown formatting
+        summary_text = f"""
+        ### Statistics for {column}
+        **Count**: {stats['count']} data points.\n
+        **Mean**: The average is {stats['mean']:.2f}.\n
+        **Standard Deviation**: The standard deviation is {stats['std']:.2f}, which indicates variability.\n
+        **Minimum**: The smallest observed value is {stats['min']:.2f}.\n
+        **25th Percentile**: 25% of the values are {stats['25%']:.2f} or less.\n
+        **50th Percentile (Median)**: The median value is {stats['50%']:.2f}.\n
+        **75th Percentile**: 75% of the values are {stats['75%']:.2f} or less.\n
+        **Maximum**: The largest observed value is {stats['max']:.2f}.
+        """
+
+        # Display the summary using Streamlit's markdown function
+        st.markdown(summary_text)
 
         
