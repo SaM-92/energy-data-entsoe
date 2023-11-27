@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import random
 from subs.data_loader import load_data, process_data_for_analysis , process_uploaded_file, convert_time , process_time_resolution_and_duplicates
-from subs.visualisation import visualize_missing_values
+from subs.visualisation import visualize_missing_values , visualize_data_by_date_range
 
 # st.set_page_config(page_title="Data Master Mind", page_icon="🚀", layout="wide")
 # st.set_page_config(page_title="Data Master Mind", page_icon="👋🏽", layout="wide")
@@ -136,25 +136,8 @@ def page1():
     date_of_interest = st.date_input("Select a date range", [start_date, end_date])
 
     if uploaded_file is not None:
-        df_day_of_interest = df_read.loc[
-            date_of_interest[0]
-            .strftime("%Y-%m-%d") : date_of_interest[1]
-            .strftime("%Y-%m-%d")
-        ]
+        visualize_data_by_date_range(df_read,date_of_interest)
 
-        st.dataframe(df_day_of_interest)
-
-        # Loop over each column in your DataFrame
-        fig2 = go.Figure()
-        for column in df_day_of_interest.columns:
-            fig2.add_trace(
-                go.Scatter(
-                    x=df_day_of_interest.index, y=df_day_of_interest[column], name=column
-                )
-            )
-
-        # Display the figure in Streamlit
-        st.plotly_chart(fig2, use_container_width=True)
 
 def page2():
     st.markdown("### 📈 Trend Analysis")
