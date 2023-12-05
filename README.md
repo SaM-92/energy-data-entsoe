@@ -58,4 +58,4 @@ Navigate to the displayed URL in your web browser to interact with the applicati
 
 ## Contact
 
-For any queries or suggestions, please reach out to [Your Contact Information].
+For any queries or suggestions, please reach out to [LinkedIn](https://www.linkedin.com/in/saeed-misaghian/) or [sam.misaqian@gmail.com](mailto:sam.misaqian@gmail.com).
