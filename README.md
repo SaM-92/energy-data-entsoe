@@ -6,6 +6,9 @@
 
 The ENTSO-E Data Analysis Tool is an interactive web application designed to streamline the analysis of the European Network of Transmission System Operators for Electricity (ENTSO-E) power system data. This tool is crafted to facilitate a seamless operation in handling, visualising, and analysing electricity market and grid data across Europe.
 
+![Demo](./images/demo.gif)
+
+
 ## Features
 
 - **Data Upload and Cleaning:** Easily upload ENTSO-E data and handle missing values.
