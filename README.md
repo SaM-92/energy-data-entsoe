@@ -18,18 +18,18 @@ The ENTSO-E Data Analysis Tool is an interactive web application designed to str
 
 ### Prerequisites
 
-- Python 3.x
-- Streamlit
-- Pandas
-- Plotly
+- Python 3.10
+- Streamlit 1.28
+- Pandas 2.1.2
+- Plotly 5.18.0
 
 ### Installation
 
 Clone the repository and install the required packages:
 
 ```
-git clone [your-repository-link]
-cd [your-repository-directory]
+git clone https://github.com/SaM-92/energy-data-entsoe.git
+
 pip install -r requirements.txt
 ```
 

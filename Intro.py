@@ -1,7 +1,18 @@
 import streamlit as st  # web development
 import datetime
-from subs.data_loader import load_data, process_data_for_analysis , process_uploaded_file, convert_time , process_time_resolution_and_duplicates , display_column_statistics
-from subs.visualisation import visualize_missing_values , visualize_data_by_date_range , visualise_time_series_data
+from subs.data_loader import (
+    load_data,
+    process_data_for_analysis,
+    process_uploaded_file,
+    convert_time,
+    process_time_resolution_and_duplicates,
+    display_column_statistics,
+)
+from subs.visualisation import (
+    visualize_missing_values,
+    visualize_data_by_date_range,
+    visualise_time_series_data,
+)
 
 st.set_page_config(
     page_title="Empowering Insights",
@@ -15,8 +26,10 @@ st.markdown("📧 Contact me: [sam.misaqian@gmail.com](mailto:sam.misaqian@gmail
 st.markdown("🔗 [GitHub](https://github.com/SaM-92)")
 st.markdown("🔗 [LinkedIn](https://www.linkedin.com/in/saeed-misaghian/)")
 
+
 def page0():
-    st.markdown("""
+    st.markdown(
+        """
 
     ---
 
@@ -43,49 +56,44 @@ def page0():
 
     This is a demo project, intended to showcase the potential of ENTSO-E data analysis.
 
-    """            
-    # ### Getting Started with ENTSO-E Data
-    # If you're new to ENTSO-E data, I've created a tutorial to help you get started:
-
-    # 🎥 [Learn how to get ENTSO-E data](https://www.youtube.com/yourvideolink)
-
-    # ### How to Use This Tool
-    # Below you can find a demo that guides you through the functionalities of this tool. Begin by uploading your data, then navigate through the features using the sidebar. Enjoy exploring your data and uncovering valuable insights!
-
+    """
+        # ### Getting Started with ENTSO-E Data
+        # If you're new to ENTSO-E data, I've created a tutorial to help you get started:
+        # 🎥 [Learn how to get ENTSO-E data](https://www.youtube.com/yourvideolink)
+        # ### How to Use This Tool
+        # Below you can find a demo that guides you through the functionalities of this tool. Begin by uploading your data, then navigate through the features using the sidebar. Enjoy exploring your data and uncovering valuable insights!
     )
-    
+
+
 # Define your pages
 def page1():
     st.markdown("# Data Manipulation")
 
-    st.write(
-        """This section helps you to """
-    )
-
+    st.write("""This section helps you to """)
 
     st.markdown("### 🔗 Upload your data")
 
     # Create a file uploader
     uploaded_file = st.file_uploader("Upload your CSV file")
 
-
     # Check if a file has been uploaded
     if uploaded_file:
         df_read = load_data(uploaded_file)
         st.dataframe(df_read)
 
-        # Show the clients the list of their DataFrame columns and ask them to 
+        # Show the clients the list of their DataFrame columns and ask them to
         # choose the column with date and time observations
         time_column = st.selectbox(
             "Please select the column with date and time observations:", df_read.columns
         )
 
-        # process data for further analysis 
-        df_read , skip_invalid_row , first_invalid_row_time= process_data_for_analysis(df_read,time_column)
+        # process data for further analysis
+        df_read, skip_invalid_row, first_invalid_row_time = process_data_for_analysis(
+            df_read, time_column
+        )
 
         # Visualise missing data
         visualize_missing_values(df_read)
-
 
     st.markdown("### ⚙️ Dealing with Missing Values")
     st.markdown("📝 Please choose how you want to deal with missing values?")
@@ -94,7 +102,7 @@ def page1():
     selected_option_missing_values = st.selectbox("Select the Job", options_to_drop)
 
     if uploaded_file is not None:
-        df_read = process_uploaded_file (df_read,selected_option_missing_values)
+        df_read = process_uploaded_file(df_read, selected_option_missing_values)
         st.dataframe(df_read)
 
     st.markdown("### ⏲️ Time Resolution Adjustment")
@@ -112,14 +120,21 @@ def page1():
         # Apply the function to your DataFrame
         df_read = convert_time(df_read, time_column)
 
-        df_read = process_time_resolution_and_duplicates(df_read, time_column, time_resolution_number, time_resolution_unit, skip_invalid_row, first_invalid_row_time)
+        df_read = process_time_resolution_and_duplicates(
+            df_read,
+            time_column,
+            time_resolution_number,
+            time_resolution_unit,
+            skip_invalid_row,
+            first_invalid_row_time,
+        )
 
         st.dataframe(df_read)
-        st.session_state['df_read'] = df_read  # Save processed DataFrame to session state for other pages
-
+        st.session_state[
+            "df_read"
+        ] = df_read  # Save processed DataFrame to session state for other pages
 
     st.markdown("### 🎨 Visualising the Results")
-
 
     # Select a range of dates
     start_date = datetime.date(2023, 7, 6)
@@ -127,7 +142,7 @@ def page1():
     date_of_interest = st.date_input("Select a date range", [start_date, end_date])
 
     if uploaded_file is not None:
-        visualize_data_by_date_range(df_read,date_of_interest)
+        visualize_data_by_date_range(df_read, date_of_interest)
 
 
 def page2():
@@ -135,23 +150,25 @@ def page2():
 
     # if uploaded_file is not None:
 
-       # Check if data has been uploaded and processed
-    if 'df_read' in st.session_state:
-        df_read = st.session_state['df_read']    
+    # Check if data has been uploaded and processed
+    if "df_read" in st.session_state:
+        df_read = st.session_state["df_read"]
 
         visualise_time_series_data(df_read)
-        display_column_statistics(df_read) 
+        display_column_statistics(df_read)
     else:
-        st.error("Please upload data on the Data Manipulation page first.")        
+        st.error("Please upload data on the Data Manipulation page first.")
 
 
 # Sidebar navigation
-st.sidebar.title('Navigation')
-page = st.sidebar.radio("Select a page:", ('Service Overview','Data Manipulation', 'Trend Analysis'))
+st.sidebar.title("Navigation")
+page = st.sidebar.radio(
+    "Select a page:", ("Service Overview", "Data Manipulation", "Trend Analysis")
+)
 
-if page == 'Data Manipulation':
+if page == "Data Manipulation":
     page1()
-elif page == 'Trend Analysis':
+elif page == "Trend Analysis":
     page2()
-elif page == 'Service Overview':
-    page0()    
+elif page == "Service Overview":
+    page0()
