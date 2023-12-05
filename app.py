@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="Empowering Insights",
     page_icon="🏭",
 )
-st.image("./header.png")
+st.image("./images/header.png")
 
 st.title("Empowering Insights: Navigating ENTSO-E Power System Data")
 st.markdown("Created by Saeed Misaghian")
